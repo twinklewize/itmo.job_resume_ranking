@@ -1,0 +1,9 @@
+# MacOS
+.DS_Store
+
+# Data
+/datasets/
+
+# Gradio
+/flagged/
+src/__pycache__/
