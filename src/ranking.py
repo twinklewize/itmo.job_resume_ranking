@@ -6,9 +6,7 @@ import numpy as np
 import re
 import torch
 
-
-
-__DOC2VEC_MODEL_PATH = '/Users/twinklewize/programming/matching/models/rjm_doc2vec_20000rows_exp2.model'
+__DOC2VEC_MODEL_PATH = '/Users/twinklewize/programming/matching/models/rjm_doc2vec_30000rows_exp3.model'
 __BERT_MODEL_NAME = "DeepPavlov/rubert-base-cased"
 __BERT_MAX_LENGTH = 512
 
@@ -51,10 +49,10 @@ def __combine_embeddings(bert_embeddings, texts):
         doc2vec_emb = __doc2vec_model.infer_vector(text.split())
         doc2vec_emb = np.atleast_1d(doc2vec_emb)
         bert_emb = np.atleast_1d(bert_emb)
+        
         doc2vec_emb /= np.linalg.norm(doc2vec_emb, ord=2) + 1e-10
         bert_emb /= np.linalg.norm(bert_emb, ord=2) + 1e-10
-        if doc2vec_emb.shape[0] != 50 or bert_emb.shape[0] != 768:
-            continue
+
         combined_emb = np.concatenate((doc2vec_emb, bert_emb), axis=0)
         combined_embeddings.append(combined_emb)
     return combined_embeddings
