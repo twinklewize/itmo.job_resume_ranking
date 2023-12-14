@@ -43,17 +43,14 @@ def __get_bert_embeddings(texts):
         embeddings.append(emb)
     return np.array(embeddings)
 
-def __combine_embeddings(bert_embeddings, texts):
+def __combine_embeddings(bert_embeddings, texts, doc2vec_weight=1.0, bert_weight=0.5):
     combined_embeddings = []
     for bert_emb, text in zip(bert_embeddings, texts):
         doc2vec_emb = __doc2vec_model.infer_vector(text.split())
         doc2vec_emb = np.atleast_1d(doc2vec_emb)
-        bert_emb = np.atleast_1d(bert_emb)
-        
-        doc2vec_emb /= np.linalg.norm(doc2vec_emb, ord=2) + 1e-10
-        bert_emb /= np.linalg.norm(bert_emb, ord=2) + 1e-10
-
-        combined_emb = np.concatenate((doc2vec_emb, bert_emb), axis=0)
+        weighted_doc2vec_emb = doc2vec_emb * doc2vec_weight
+        weighted_bert_emb = bert_emb * bert_weight
+        combined_emb = np.concatenate((weighted_doc2vec_emb, weighted_bert_emb), axis=0)
         combined_embeddings.append(combined_emb)
     return combined_embeddings
 
