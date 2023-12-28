@@ -1,23 +1,20 @@
-
 from gensim.models.doc2vec import Doc2Vec
 from transformers import BertTokenizer, BertModel
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import re
 import torch
+from config import Config
 
-__DOC2VEC_MODEL_PATH = '/Users/twinklewize/programming/matching/models/rjm_doc2vec_30000rows_exp3.model'
-__BERT_MODEL_NAME = "DeepPavlov/rubert-base-cased"
-__BERT_MAX_LENGTH = 512
+config = Config()
 
-__doc2vec_model = Doc2Vec.load(__DOC2VEC_MODEL_PATH)
-__bert_model = BertModel.from_pretrained(__BERT_MODEL_NAME)
-__tokenizer = BertTokenizer.from_pretrained(__BERT_MODEL_NAME)
+__doc2vec_model = Doc2Vec.load(config.REPOSITORY_PATH + config.MODELS_PATH + config.DOC2VEC_MODEL)
+__bert_model = BertModel.from_pretrained(config.BERT_MODEL_NAME)
+__tokenizer = BertTokenizer.from_pretrained(config.BERT_MODEL_NAME)
 
-__SEED = 2023
-np.random.seed(__SEED)
-torch.manual_seed(__SEED)
-__doc2vec_model.random.seed(__SEED)
+np.random.seed(config.SEED)
+torch.manual_seed(config.SEED)
+__doc2vec_model.random.seed(config.SEED)
 
 def __preprocess_text(text):
     text = text.lower()
@@ -29,7 +26,7 @@ def __preprocess_text(text):
 def __get_bert_embeddings(texts):
     embeddings = []
     for text in texts:
-        encoded_input = __tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=__BERT_MAX_LENGTH)
+        encoded_input = __tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=config.BERT_MAX_LENGTH)
         with torch.no_grad():
             model_output = __bert_model(**encoded_input)
         emb = model_output.last_hidden_state.mean(dim=1)
